@@ -104,7 +104,15 @@ function speak(text) {
 }
 
 function generateName() {
-  let name = random(start) + random(middle) + random(end);
+  let name = random([
+    `${random(start)}_${random(middle)}`,
+    `${random(middle)}${random(end)}`,
+    `${random(start)}-${random(middle)}-${random(end)}`,
+    `${random(middle)}_${Math.floor(Math.random() * 999999)}`,
+    `${random(start)}${random(middle)}${random(middle)}`,
+    `${random(start)}.${random(middle)}.${random(end)}`,
+    `${random(middle)}_${random(end)}_${random(start)}`,
+  ]);
 
   if (Math.random() < 0.5) {
     name += Math.floor(Math.random() * 10000);
