@@ -1,6 +1,7 @@
 const emojis = ["💀", "🗿", "🤡", "🐟", "🍌", "🥒", "🦆", "🧌", "🧃", "🧇"];
 
 const bg = document.getElementById("bg");
+const generateBtn = document.getElementById("generate");
 
 for (let i = 0; i < 30; i++) {
   const e = document.createElement("div");
@@ -74,24 +75,86 @@ const end = [
   "fr",
 ];
 
+const roasts = [
+  "This is terrible.",
+  "Please don't use this.",
+  "Absolutely awful.",
+  "Peak 2016 energy.",
+  "I have made a mistake.",
+];
+const intros = [
+  "Your awful username is",
+  "Congratulations. You got",
+  "You should never use",
+  "Today's disappointment is",
+  "I generated",
+];
+
 function random(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function speak(text) {
+  speechSynthesis.cancel();
+
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.volume = Math.random() < 0.1 ? 0.4 : 1;
+  msg.pitch = 0.8 + Math.random() * 0.8;
+  msg.rate = 0.9 + Math.random() * 0.3;
+
+  // pick an English voice if available
+  const voice = speechSynthesis
+    .getVoices()
+    .find((v) => v.lang.startsWith("en"));
+
+  if (voice) msg.voice = voice;
+
+  msg.onstart = () => {
+    generateBtn.disabled = true;
+    generateBtn.textContent = "speaking...";
+  };
+
+  msg.onend = () => {
+    generateBtn.disabled = false;
+    generateBtn.textContent = "generate";
+  };
+
+  msg.onerror = () => {
+    generateBtn.disabled = false;
+    generateBtn.textContent = "generate";
+  };
+
+  speechSynthesis.speak(msg);
 }
 
 function generate() {
   let name = random(start) + random(middle) + random(end);
 
   if (Math.random() < 0.5) {
-    name += Math.floor(Math.random() * 9999);
+    name += Math.floor(Math.random() * 10000);
   }
 
-  if (Math.random() < 0.3) {
-    name = "xX_" + name + "_Xx";
-  } else if (Math.random() < 0.3) {
-    name = "Xx_" + name + "_xX";
+  const style = Math.random();
+
+  if (style < 0.2) {
+    name = `xX_${name}_Xx`;
+  } else if (style < 0.4) {
+    name = `Xx_${name}_xX`;
+  } else if (style < 0.5) {
+    name = `_${name}_`;
   }
 
   document.getElementById("username").textContent = name;
+
+  // 25% chance to speak
+  if (Math.random() < 0.25) {
+    const line =
+      Math.random() < 0.5
+        ? `${random(intros)}... ${name}.`
+        : `${name}. ${random(roasts)}`;
+
+    speak(line);
+  }
 }
 
 generate();

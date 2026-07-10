@@ -24,7 +24,10 @@
 
       <div id="username">idk</div>
 
-      <button onclick="generate()">generate</button>
+      <button id="generate" onclick="generate()">generate</button>
+      <button onclick="speak(document.getElementById('username').textContent)">
+        🔊 hear it
+      </button>
     </main>
     <script src="script.js"></script>
   </body>
