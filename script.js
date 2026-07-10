@@ -1,6 +1,9 @@
 const bg = document.getElementById("bg");
 const generateBtn = document.getElementById("generate");
 const themeBtn = document.getElementById("theme-toggle");
+const usernameEl = document.getElementById("username");
+const history = [];
+const historyEl = document.getElementById("history");
 
 for (let i = 0; i < 30; i++) {
   const e = document.createElement("div");
@@ -15,6 +18,13 @@ for (let i = 0; i < 30; i++) {
 
   bg.appendChild(e);
 }
+setInterval(() => {
+  document.querySelectorAll(".bg-element").forEach((e) => {
+    if (Math.random() < 0.15) {
+      e.style.rotate = `${Math.random() * 720 - 360}deg`;
+    }
+  });
+}, 3000);
 function explode() {
   for (let i = 0; i < 20; i++) {
     const e = document.createElement("div");
@@ -22,7 +32,7 @@ function explode() {
     e.className = "explode";
     e.textContent = random(emojis);
 
-    const rect = document.getElementById("username").getBoundingClientRect();
+    const rect = usernameEl.getBoundingClientRect();
 
     e.style.left = rect.left + rect.width / 2 + "px";
     e.style.top = rect.top + rect.height / 2 + "px";
@@ -79,12 +89,16 @@ function speak(text) {
   msg.onend = () => {
     generateBtn.disabled = false;
     generateBtn.textContent = "generate";
+
+    generateBtn.classList.add("bounce");
   };
 
   msg.onerror = () => {
     generateBtn.disabled = false;
     generateBtn.textContent = "generate";
   };
+
+  generateBtn.onanimationend = () => generateBtn.classList.remove("bounce");
 
   speechSynthesis.speak(msg);
 }
@@ -111,7 +125,16 @@ function generateName() {
 function generate() {
   let name = generateName();
 
-  document.getElementById("username").textContent = name;
+  username.textContent = name;
+  username.classList.remove("pop");
+  void username.offsetWidth;
+  username.classList.add("pop");
+
+  history.unshift(name);
+
+  history.splice(5);
+
+  historyEl.innerHTML = history.map((n) => `<li>${n}</li>`).join("");
 
   // 15% chance to speak
   if (Math.random() < 0.15) {
@@ -127,6 +150,19 @@ function generate() {
   if (Math.random() < 0.1) {
     explode();
   }
+}
+
+function copyUsername() {
+  const name = usernameEl.textContent;
+
+  navigator.clipboard.writeText(name);
+
+  const btn = event.target;
+  btn.textContent = "✅ copied";
+
+  setTimeout(() => {
+    btn.textContent = "📋 copy";
+  }, 1200);
 }
 
 generate();
